@@ -1,0 +1,26 @@
+{
+  "name": "spec-drum",
+  "version": "0.1.1",
+  "description": "Spec-driven development for Claude Code. Install skills for /spec-init, /spec-plan, /spec-execute, and /spec-verify.",
+  "bin": {
+    "spec-drum": "bin/install.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "specs/"
+  ],
+  "keywords": [
+    "claude-code",
+    "spec-driven",
+    "development",
+    "claude",
+    "ai",
+    "skills"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wirtsi/spec-drum.git"
+  }
+}

@@ -1,0 +1,4 @@
+.claude/skills/
+.specs/
+node_modules/
+*.tgz
