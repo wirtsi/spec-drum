@@ -2,6 +2,14 @@
 
 Spec-driven development for [Claude Code](https://code.claude.com). Turns tickets into structured specs, executes them task-by-task with atomic commits, and verifies the result.
 
+### Why "spec-drum"?
+
+The name is a triple-layered pun that nobody asked for:
+
+1. **The ZX Spectrum** — The legendary 48K home computer where you had to wait 5 minutes for a tape to load. AI-driven spec execution is about as far from that machine as you can get, which is exactly the point.
+2. **Beating the drum** — spec-drum beats the drum for better specs. Someone has to.
+3. **The tapas** — *Dátiles con Bacon*: a date wrapped in bacon, because *Speck* is German for bacon. Specs wrapped in automation. It's a stretch, but so is every good tapas menu.
+
 Requires **Claude Code >= 2.1.63** (for `/batch` and `/simplify` support).
 
 ## Install
