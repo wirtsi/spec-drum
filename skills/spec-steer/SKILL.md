@@ -46,6 +46,8 @@ Scan the project to understand its structure and conventions:
 
 For each meaningful subdirectory (src/, lib/, api/, components/, tests/, etc.), propose a CLAUDE.md file containing **discovered conventions only** — not generic advice.
 
+**Specificity rule**: Each CLAUDE.md must only document conventions for files *within that directory*. If a convention applies project-wide or to files outside the directory, it belongs in the root CLAUDE.md, not the sub-document.
+
 Good convention examples:
 - "Components use default exports with named type exports"
 - "Tests use vitest with `describe/it` blocks, co-located as `*.test.ts`"
@@ -56,6 +58,33 @@ Bad convention examples (too generic, do NOT write these):
 - "Write clean code"
 - "Follow best practices"
 - "Use meaningful variable names"
+
+### Step B2.5: Deduplication pass
+
+Before presenting any files to the user, audit all proposed steering documents together for shared or misplaced content:
+
+1. **Exact duplicate detection**: Find any rule, sentence, or section that appears in two or more proposed documents verbatim or near-verbatim.
+2. **Semantic duplicate detection**: Find rules that express the same convention in different words across documents (e.g., the same import alias convention mentioned in both `src/` and `src/utils/`).
+3. **Scope check**: For each rule in each sub-document, ask: "Does this rule apply *specifically* to files in this directory, or is it project-wide?" Rules that apply across multiple directories or the whole project must be moved to the root CLAUDE.md.
+
+**Consolidation actions**:
+- Move duplicates and project-wide rules into root CLAUDE.md (create a proposed root section if needed)
+- Remove the moved content from sub-documents — do not leave copies in both places
+- If a rule is nearly but not exactly shared (e.g., slightly different patterns), keep the more-specific variant in the sub-document and hoist only the shared core to root
+
+Show the user a **consolidation summary** before proceeding to B3:
+```
+Consolidation plan:
+  → Root CLAUDE.md  [N rules moved here]
+    + "<hoisted rule 1>"
+    + "<hoisted rule 2>"
+
+  src/components/CLAUDE.md  [N rules removed as duplicates]
+    - "<removed rule>"
+
+  src/api/CLAUDE.md  [unchanged]
+```
+Ask: "Proceed with this consolidation? (yes / adjust / skip consolidation)"
 
 ### Step B3: Interactive creation
 
@@ -195,6 +224,37 @@ For each steering document (e.g., `src/components/CLAUDE.md`):
    - **New patterns**: conventions observed in the code but not yet in the steering document
    - **Stale patterns**: rules in the steering document that no longer reflect what the code actually does
    - **Changed patterns**: rules that are partially right but need updating
+
+### Step S2.5: Cross-file deduplication check
+
+After re-analyzing all directories, read all steering documents together (including root CLAUDE.md) and check for:
+
+1. **Duplicate content**: Any rule, sentence, or section that appears in two or more files verbatim or near-verbatim. Flag each occurrence with the files where it appears.
+2. **Misplaced content**: Rules in a sub-document that are not specific to that directory — i.e., they describe conventions used across the whole project or in sibling/parent directories.
+3. **Missing root coverage**: Content that was previously unique to one sub-document but is now also present in other directories (the codebase has generalised the pattern).
+
+**Proposed consolidation**: For each issue found, propose one of:
+- **Hoist to root**: Move the rule to root CLAUDE.md, remove from sub-document(s)
+- **Remove duplicate**: Keep the most-specific version, delete copies elsewhere
+- **Narrow the rule**: Reword a too-broad rule in the sub-document so it only describes what is specific to that directory
+
+Show the user a **cross-file diff** before S3:
+```
+Cross-file issues found:
+
+  DUPLICATE across src/components/ and src/pages/:
+    "<shared rule>"
+    → Propose: hoist to root CLAUDE.md, remove from both sub-docs
+
+  MISPLACED in src/utils/CLAUDE.md (applies project-wide):
+    "<too-broad rule>"
+    → Propose: move to root CLAUDE.md
+
+  DUPLICATE in src/api/CLAUDE.md (already in root CLAUDE.md):
+    "<repeated rule>"
+    → Propose: remove from src/api/CLAUDE.md
+```
+Ask: "Apply consolidation? (yes / adjust / skip)" before proceeding to per-file drift updates.
 
 ### Step S3: Show drift report and propose updates
 
