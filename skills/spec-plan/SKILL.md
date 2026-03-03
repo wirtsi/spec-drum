@@ -104,10 +104,12 @@ branch: <ticket-id>
 - [ ] T1: <Task title>
   - **Files**: `path/to/file1.ts`, `path/to/file2.ts`
   - **Approach**: <1-2 sentences on how to implement>
+  - **Done when**: <observable condition: test passes, export exists, endpoint returns X>
 
 - [ ] T2: <Task title>
   - **Files**: `path/to/file3.ts`
   - **Approach**: <1-2 sentences>
+  - **Done when**: <observable condition>
 
 <Continue for all tasks. Order matters — dependencies first.>
 
@@ -133,7 +135,31 @@ branch: <ticket-id>
 - Aim for 3-10 tasks. If more than 10, the ticket should be split
 - Include a testing task if the project has tests
 
-## Step 5: Write state.md
+## Step 5: Validate spec integrity
+
+Before presenting the spec, run a cross-artifact integrity check. Catching drift between requirements and tasks now is cheap; catching it after commits exist is not.
+
+### Requirement coverage
+For each **Must Have** requirement, identify which task(s) address it. If a Must Have has no corresponding task, flag it as **UNCOVERED**.
+
+### Task justification
+For each task, identify which Must Have or Should Have requirement(s) it serves. If a task doesn't map to any requirement, flag it as **ORPHAN** (potential scope creep).
+
+### Criteria traceability
+For each acceptance criterion, confirm it maps to at least one Must Have. If not, flag it as **UNANCHORED**.
+
+### Won't Do boundary
+If any task could reasonably be interpreted as implementing something listed in Won't Do, flag it as a **BOUNDARY VIOLATION**.
+
+### Resolution
+If any issues are found:
+1. Fix obvious gaps yourself — add a missing task, tighten a task description, anchor a dangling criterion
+2. For ambiguous cases, ask the user to decide
+3. Update spec.md with any fixes
+
+Only proceed to Step 6 once the integrity check passes (or the user explicitly accepts the remaining issues).
+
+## Step 6: Write state.md
 
 Create `.specs/<ticket-id>/state.md`:
 
@@ -170,7 +196,7 @@ None.
 <empty — appended by /spec-verify>
 ```
 
-## Step 6: Present to user
+## Step 7: Present to user
 
 Show the user:
 1. A summary of the spec (title, task count, key files)

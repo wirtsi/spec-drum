@@ -1,7 +1,7 @@
 {
   "name": "spec-drum",
-  "version": "0.1.1",
-  "description": "Spec-driven development for Claude Code. Install skills for /spec-init, /spec-plan, /spec-execute, and /spec-verify.",
+  "version": "0.1.2",
+  "description": "Spec-driven development for Claude Code. Install skills for /spec-steer, /spec-plan, /spec-execute, and /spec-verify.",
   "bin": {
     "spec-drum": "bin/install.js"
   },

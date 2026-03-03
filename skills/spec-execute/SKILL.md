@@ -77,6 +77,7 @@ For each unchecked task in spec.md (starting from resume point):
 **Batch mode**: If a task applies the same transformation across many files (e.g., "update all API routes to use new middleware", "rename X to Y across the codebase", "migrate all components from library A to B"), use `/batch` to execute it in parallel. Example: `/batch update all files in src/routes/ to use the new auth middleware`. Only use `/batch` when the transformation is uniform and files are independent — never for tasks requiring sequential logic or cross-file coordination.
 
 ### 5c: Validate
+- If the task has a **Done when** condition, verify it is satisfied before committing
 - If the project has a type checker, run it (e.g., `npx tsc --noEmit`)
 - If the task involves tests, run relevant tests
 - If linting is configured, run the linter on changed files

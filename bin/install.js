@@ -7,11 +7,15 @@ const readline = require("readline");
 
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
 
+const HOOK_COMMAND =
+  'if [ -f "$CLAUDE_PROJECT_DIR/.claude/bin/validate-spec.js" ]; then node "$CLAUDE_PROJECT_DIR/.claude/bin/validate-spec.js"; else node "$HOME/.claude/bin/validate-spec.js"; fi';
+
 const SKILL_FILES = [
-  { src: "skills/spec-init/SKILL.md", dest: "skills/spec-init/SKILL.md" },
+  { src: "skills/spec-steer/SKILL.md", dest: "skills/spec-steer/SKILL.md" },
   { src: "skills/spec-plan/SKILL.md", dest: "skills/spec-plan/SKILL.md" },
   { src: "skills/spec-execute/SKILL.md", dest: "skills/spec-execute/SKILL.md" },
   { src: "skills/spec-verify/SKILL.md", dest: "skills/spec-verify/SKILL.md" },
+  { src: "bin/validate-spec.js", dest: "bin/validate-spec.js" },
 ];
 
 const SPEC_FILES = [
@@ -20,7 +24,7 @@ const SPEC_FILES = [
 
 function printBanner() {
   console.log();
-  console.log("  spec-drum \uD83E\uDD41");
+  console.log("  spec-drum 🥁");
   console.log();
 }
 
@@ -65,51 +69,91 @@ function ensureDir(filePath) {
 }
 
 function installFile(srcRel, destPath) {
-  const srcPath = path.join(PACKAGE_ROOT, srcRel);
-  const srcContent = fs.readFileSync(srcPath, "utf-8");
-
+  const srcContent = fs.readFileSync(path.join(PACKAGE_ROOT, srcRel), "utf-8");
   if (fs.existsSync(destPath)) {
-    const existing = fs.readFileSync(destPath, "utf-8");
-    if (existing === srcContent) {
-      return "up-to-date";
-    }
-    return "differs";
+    return fs.readFileSync(destPath, "utf-8") === srcContent ? "up-to-date" : "differs";
   }
-
   ensureDir(destPath);
   fs.writeFileSync(destPath, srcContent, "utf-8");
   return "created";
 }
 
-function writeFile(srcRel, destPath) {
-  const srcPath = path.join(PACKAGE_ROOT, srcRel);
-  const srcContent = fs.readFileSync(srcPath, "utf-8");
+function overwriteFile(srcRel, destPath) {
   ensureDir(destPath);
-  fs.writeFileSync(destPath, srcContent, "utf-8");
+  fs.writeFileSync(destPath, fs.readFileSync(path.join(PACKAGE_ROOT, srcRel), "utf-8"), "utf-8");
 }
 
 async function handleDiffers(rl, destPath, srcRel) {
-  const rel = path.relative(process.cwd(), destPath);
-  console.log(`  ~ ${rel} differs from source`);
+  console.log(`  ~ ${path.relative(process.cwd(), destPath)} differs from source`);
   const answer = await ask(rl, "    Overwrite / Skip / Backup? [o/s/b]: ");
-
   switch (answer.toLowerCase()) {
     case "o":
     case "overwrite":
-      writeFile(srcRel, destPath);
+      overwriteFile(srcRel, destPath);
       return "overwritten";
     case "b":
-    case "backup": {
-      const backupPath = destPath + ".bak";
-      fs.copyFileSync(destPath, backupPath);
-      writeFile(srcRel, destPath);
+    case "backup":
+      fs.copyFileSync(destPath, destPath + ".bak");
+      overwriteFile(srcRel, destPath);
       return "backed-up";
-    }
-    case "s":
-    case "skip":
     default:
       return "skipped";
   }
+}
+
+async function installFiles(rl, files, destDir, prefix, results) {
+  for (const file of files) {
+    const destPath = path.join(destDir, file.dest);
+    const rel = prefix + file.dest;
+    const status = installFile(file.src, destPath);
+
+    if (status === "created") {
+      console.log(`  ✓ ${rel}`);
+      results.created++;
+    } else if (status === "up-to-date") {
+      console.log(`  • ${rel} (up to date)`);
+      results["up-to-date"]++;
+    } else {
+      const action = await handleDiffers(rl, destPath, file.src);
+      if (action === "overwritten") {
+        console.log(`  ✓ ${rel} (overwritten)`);
+        results.overwritten++;
+      } else if (action === "backed-up") {
+        console.log(`  ✓ ${rel} (backed up + overwritten)`);
+        results["backed-up"]++;
+      } else {
+        console.log(`  - ${rel} (skipped)`);
+        results.skipped++;
+      }
+    }
+  }
+}
+
+function removeOldSpecInit(claudeDir) {
+  const oldDir = path.join(claudeDir, "skills", "spec-init");
+  if (fs.existsSync(oldDir)) {
+    fs.rmSync(oldDir, { recursive: true });
+    console.log("  ✓ removed old skills/spec-init/ (renamed to spec-steer)");
+  }
+}
+
+function mergeHook(settingsPath) {
+  let settings = {};
+  if (fs.existsSync(settingsPath)) {
+    try { settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8")); } catch { /**/ }
+  }
+
+  const postToolUse = (settings.hooks = settings.hooks || {}).PostToolUse =
+    (settings.hooks.PostToolUse || []);
+
+  if (postToolUse.some((g) => g.hooks?.some((h) => h.command === HOOK_COMMAND))) {
+    return "up-to-date";
+  }
+
+  postToolUse.push({ matcher: "Write|Edit", hooks: [{ type: "command", command: HOOK_COMMAND }] });
+  ensureDir(settingsPath);
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n", "utf-8");
+  return "created";
 }
 
 async function run() {
@@ -128,118 +172,39 @@ async function run() {
   } else if (args.includes("--global")) {
     scope = "global";
   } else {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     scope = await promptScope(rl);
     rl.close();
   }
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const results = { created: 0, "up-to-date": 0, overwritten: 0, "backed-up": 0, skipped: 0 };
 
+  const claudeDir = scope === "local"
+    ? path.join(process.cwd(), ".claude")
+    : path.join(os.homedir(), ".claude");
+
+  console.log(scope === "local" ? "  Installing to this project..." : "  Installing globally...");
+  console.log();
+
+  removeOldSpecInit(claudeDir);
+  await installFiles(rl, SKILL_FILES, claudeDir, scope === "local" ? ".claude/" : "~/.claude/", results);
+
   if (scope === "local") {
-    const cwd = process.cwd();
-    const claudeDir = path.join(cwd, ".claude");
-    const specsDir = path.join(cwd, ".specs");
+    await installFiles(rl, SPEC_FILES, path.join(process.cwd(), ".specs"), ".specs/", results);
+  }
 
-    console.log("  Installing to this project...");
-    console.log();
-
-    // Install skill files into .claude/skills/
-    for (const file of SKILL_FILES) {
-      const destPath = path.join(claudeDir, file.dest);
-      const status = installFile(file.src, destPath);
-      const rel = ".claude/" + file.dest;
-
-      if (status === "created") {
-        console.log(`  \u2713 ${rel}`);
-        results.created++;
-      } else if (status === "up-to-date") {
-        console.log(`  \u2022 ${rel} (up to date)`);
-        results["up-to-date"]++;
-      } else if (status === "differs") {
-        const action = await handleDiffers(rl, destPath, file.src);
-        if (action === "overwritten") {
-          console.log(`  \u2713 ${rel} (overwritten)`);
-          results.overwritten++;
-        } else if (action === "backed-up") {
-          console.log(`  \u2713 ${rel} (backed up + overwritten)`);
-          results["backed-up"]++;
-        } else {
-          console.log(`  - ${rel} (skipped)`);
-          results.skipped++;
-        }
-      }
-    }
-
-    // Install spec conventions into .specs/
-    for (const file of SPEC_FILES) {
-      const destPath = path.join(specsDir, file.dest);
-      const status = installFile(file.src, destPath);
-      const rel = ".specs/" + file.dest;
-
-      if (status === "created") {
-        console.log(`  \u2713 ${rel}`);
-        results.created++;
-      } else if (status === "up-to-date") {
-        console.log(`  \u2022 ${rel} (up to date)`);
-        results["up-to-date"]++;
-      } else if (status === "differs") {
-        const action = await handleDiffers(rl, destPath, file.src);
-        if (action === "overwritten") {
-          console.log(`  \u2713 ${rel} (overwritten)`);
-          results.overwritten++;
-        } else if (action === "backed-up") {
-          console.log(`  \u2713 ${rel} (backed up + overwritten)`);
-          results["backed-up"]++;
-        } else {
-          console.log(`  - ${rel} (skipped)`);
-          results.skipped++;
-        }
-      }
-    }
+  const hookStatus = mergeHook(path.join(claudeDir, "settings.json"));
+  const settingsLabel = (scope === "local" ? ".claude" : "~/.claude") + "/settings.json";
+  if (hookStatus === "created") {
+    console.log(`  ✓ ${settingsLabel} (hook added)`);
+    results.created++;
   } else {
-    // Global install: skills only (no .specs)
-    const claudeDir = path.join(os.homedir(), ".claude");
-
-    console.log("  Installing globally...");
-    console.log();
-
-    for (const file of SKILL_FILES) {
-      const destPath = path.join(claudeDir, file.dest);
-      const status = installFile(file.src, destPath);
-      const rel = "~/.claude/" + file.dest;
-
-      if (status === "created") {
-        console.log(`  \u2713 ${rel}`);
-        results.created++;
-      } else if (status === "up-to-date") {
-        console.log(`  \u2022 ${rel} (up to date)`);
-        results["up-to-date"]++;
-      } else if (status === "differs") {
-        const action = await handleDiffers(rl, destPath, file.src);
-        if (action === "overwritten") {
-          console.log(`  \u2713 ${rel} (overwritten)`);
-          results.overwritten++;
-        } else if (action === "backed-up") {
-          console.log(`  \u2713 ${rel} (backed up + overwritten)`);
-          results["backed-up"]++;
-        } else {
-          console.log(`  - ${rel} (skipped)`);
-          results.skipped++;
-        }
-      }
-    }
+    console.log(`  • ${settingsLabel} (hook already present)`);
+    results["up-to-date"]++;
   }
 
   rl.close();
-
   console.log();
 
   const parts = [];
@@ -248,17 +213,14 @@ async function run() {
   if (results["backed-up"] > 0) parts.push(`${results["backed-up"]} backed up`);
   if (results["up-to-date"] > 0) parts.push(`${results["up-to-date"]} up to date`);
   if (results.skipped > 0) parts.push(`${results.skipped} skipped`);
-
-  if (parts.length > 0) {
-    console.log(`  ${parts.join(", ")}.`);
-  }
+  if (parts.length > 0) console.log(`  ${parts.join(", ")}.`);
 
   console.log();
   if (scope === "local") {
-    console.log("  Done! Run /spec-init to get started.");
+    console.log("  Done! Run /spec-steer to get started.");
   } else {
     console.log("  Done! Skills installed globally.");
-    console.log("  Run /spec-init in any project to get started.");
+    console.log("  Run /spec-steer in any project to get started.");
   }
   console.log();
 }

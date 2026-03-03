@@ -14,12 +14,12 @@ and <https://github.com/bmad-code-org/BMAD-METHOD> but utilises the latest Claud
 ## spec-drum Skills
 
 ### Workflow
-1. `/spec-init` — Scaffold spec-drum: analyze codebase, create directory-scoped CLAUDE.md files, set up `.specs/`
+1. `/spec-steer` — Manage steering documents (create on first run, sync drift on subsequent runs)
 2. `/spec-plan <ticket>` — Create a spec from a ticket (GitHub issue URL, Jira ID, or description)
 3. `/spec-execute <ticket-id>` — Execute the spec (creates branch, implements tasks, commits)
 4. `/spec-verify <ticket-id>` — Verify the implementation against the spec
 
 ### Conventions
-- Directory-scoped CLAUDE.md files contain codebase conventions
+- Directory-scoped CLAUDE.md files are steering documents capturing discovered conventions
 - `.specs/CLAUDE.md` defines spec format and rules
 - One git branch per ticket, commit format: `<ticket-id>: T<N> - <description>`

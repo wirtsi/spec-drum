@@ -35,7 +35,7 @@ Sections:
 1. **Context** — Why this work exists, background
 2. **Research Findings** — Relevant Files, Existing Patterns, Constraints discovered during planning
 3. **Requirements** — Must Have, Should Have, Won't Do
-4. **Tasks** — Ordered checklist (T1..TN), each with Files + Approach
+4. **Tasks** — Ordered checklist (T1..TN), each with Files, Approach, and Done when
 5. **Verification** — Automated Checks, Manual Checks, Acceptance Criteria
 
 ## State Format (state.md)
@@ -70,4 +70,4 @@ Sections:
 | spec.md | /spec-plan | /spec-execute, /spec-verify |
 | state.md (create) | /spec-plan | /spec-execute, /spec-verify |
 | state.md (update) | /spec-execute, /spec-verify | /spec-execute, /spec-verify |
-| CLAUDE.md (conventions) | /spec-init | all skills |
+| CLAUDE.md (steering) | /spec-steer | all skills |
