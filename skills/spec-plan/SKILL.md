@@ -126,6 +126,13 @@ branch: <ticket-id>
 - [ ] <Criterion 2>
 ```
 
+### Diagrams
+
+- Use **ASCII diagrams** where a visual makes structure clearer (e.g., directory layouts, data models, component relationships)
+- Use **Mermaid flowcharts** to describe conditional flows, state machines, or decision logic (if-this-then-that). Wrap in a ` ```mermaid ` fenced code block.
+
+Only add diagrams when they genuinely aid understanding — don't add them for decoration.
+
 ### Task decomposition guidelines
 
 - Each task should be **one logical change** that results in a single commit

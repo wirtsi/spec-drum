@@ -42,9 +42,10 @@ Check state.md:
 branch_name = <ticket-id>  (from spec.md frontmatter)
 ```
 
-1. Check if branch exists: `git branch --list <branch_name>`
-2. If exists: `git checkout <branch_name>`
-3. If not: `git checkout -b <branch_name>`
+1. Ensure main is up to date: `git checkout main && git pull --ff-only`
+2. Check if branch exists: `git branch --list <branch_name>`
+3. If exists: `git checkout <branch_name>` and rebase onto main if behind: `git rebase main`
+4. If not: `git checkout -b <branch_name>` (branches off the now-current main)
 
 Update state.md:
 - Set `status: in-progress`

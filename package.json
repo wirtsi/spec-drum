@@ -1,6 +1,6 @@
 {
   "name": "spec-drum",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Spec-driven development for Claude Code. Install skills for /spec-steer, /spec-plan, /spec-execute, /spec-verify, and /spec-quick.",
   "bin": {
     "spec-drum": "bin/install.js"
@@ -21,6 +21,6 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wirtsi/spec-drum.git"
+    "url": "git+https://github.com/wirtsi/spec-drum.git"
   }
 }
