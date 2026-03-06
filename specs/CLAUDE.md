@@ -71,3 +71,4 @@ Sections:
 | state.md (create) | /spec-plan | /spec-execute, /spec-verify |
 | state.md (update) | /spec-execute, /spec-verify | /spec-execute, /spec-verify |
 | CLAUDE.md (steering) | /spec-steer | all skills |
+| *(no files)* | /spec-quick | reads CLAUDE.md files only |

@@ -173,6 +173,7 @@ Sections:
 | state.md (create) | /spec-plan | /spec-execute, /spec-verify |
 | state.md (update) | /spec-execute, /spec-verify | /spec-execute, /spec-verify |
 | CLAUDE.md (steering) | /spec-steer | all skills |
+| *(no files)* | /spec-quick | reads CLAUDE.md files only |
 ```
 
 ### Step B5: Suggest root CLAUDE.md additions
@@ -186,9 +187,10 @@ This project uses spec-drum for spec-driven development. Specs live in `.specs/`
 
 ### Workflow
 1. `/spec-steer` — Manage steering documents (create on first run, sync on subsequent runs)
-2. `/spec-plan <ticket>` — Create a spec from a ticket (GitHub issue URL, Jira ID, or description)
-3. `/spec-execute <ticket-id>` — Execute the spec (creates branch, implements tasks, commits)
-4. `/spec-verify <ticket-id>` — Verify the implementation against the spec
+2. `/spec-quick <description>` — Ad-hoc tasks: ephemeral plan + atomic commits, no spec files
+3. `/spec-plan <ticket>` — Create a spec from a ticket (GitHub issue URL, Jira ID, or description)
+4. `/spec-execute <ticket-id>` — Execute the spec (creates branch, implements tasks, commits)
+5. `/spec-verify <ticket-id>` — Verify the implementation against the spec
 
 ### Conventions
 - Directory-scoped CLAUDE.md files are steering documents capturing discovered conventions

@@ -29,10 +29,28 @@ npx spec-drum --global  # install to ~/.claude/
 
 ## Workflow
 
+### Full spec lifecycle (tickets, features, non-trivial work)
+
 1. **`/spec-steer`** — Manage steering documents: analyze the codebase and create directory-scoped CLAUDE.md convention files on first run; detect and sync drift on subsequent runs
 2. **`/spec-plan <ticket>`** — Create a spec from a GitHub issue URL, Jira ID, or plain text description
 3. **`/spec-execute <ticket-id>`** — Execute the spec: creates a branch, implements tasks with atomic commits, tracks progress
 4. **`/spec-verify <ticket-id>`** — Verify the implementation against the spec's requirements and acceptance criteria
+
+### Quick tasks (small, well-scoped changes)
+
+**`/spec-quick <description>`** — Skip the spec lifecycle for tasks you already understand. Builds an ephemeral plan (shown in-conversation, not written to disk), asks for approval, then executes with atomic commits. No `.specs/` files created.
+
+```
+/spec-quick add dark mode toggle to the settings page
+/spec-quick fix null pointer in auth middleware --verify
+/spec-quick refactor user service to repository pattern --branch refactor-user-svc
+```
+
+Options:
+- **`--branch <name>`** — create and switch to a branch before executing
+- **`--verify`** — run tests/lint/typecheck after all tasks complete
+
+If the task turns out to need more than 5 tasks, spec-quick will tell you to use `/spec-plan` instead.
 
 ## What gets installed
 
@@ -44,6 +62,7 @@ npx spec-drum --global  # install to ~/.claude/
   spec-plan/SKILL.md
   spec-execute/SKILL.md
   spec-verify/SKILL.md
+  spec-quick/SKILL.md
 .claude/bin/
   validate-spec.js       # Frontmatter validator (PostToolUse hook)
 .claude/settings.json    # Hook registration (merged, not overwritten)
@@ -59,6 +78,7 @@ npx spec-drum --global  # install to ~/.claude/
   spec-plan/SKILL.md
   spec-execute/SKILL.md
   spec-verify/SKILL.md
+  spec-quick/SKILL.md
 ~/.claude/bin/
   validate-spec.js
 ~/.claude/settings.json  # Hook registration (merged, not overwritten)
