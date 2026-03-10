@@ -42,10 +42,11 @@ Check state.md:
 branch_name = <ticket-id>  (from spec.md frontmatter)
 ```
 
-1. Ensure main is up to date: `git checkout main && git pull --ff-only`
-2. Check if branch exists: `git branch --list <branch_name>`
-3. If exists: `git checkout <branch_name>` and rebase onto main if behind: `git rebase main`
-4. If not: `git checkout -b <branch_name>` (branches off the now-current main)
+1. Detect the default branch: `git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'` (falls back to `main` if no remote is set)
+2. Ensure default branch is up to date: `git checkout <default-branch> && git pull --ff-only`
+3. Check if branch exists: `git branch --list <branch_name>`
+4. If exists: `git checkout <branch_name>` and rebase onto default branch if behind: `git rebase <default-branch>`
+5. If not: `git checkout -b <branch_name>` (branches off the now-current default branch)
 
 Update state.md:
 - Set `status: in-progress`

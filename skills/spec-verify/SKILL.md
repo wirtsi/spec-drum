@@ -1,6 +1,6 @@
 ---
 name: spec-verify
-description: Verify a completed spec against its requirements. Runs automated checks, validates acceptance criteria, and produces a verification report.
+description: Verify a completed spec against its requirements. Runs automated checks, validates acceptance criteria, and produces a verification report. Use this after spec execution to review code quality, check test results, and confirm all requirements are met.
 user-invocable: true
 context: fork
 model: sonnet
@@ -99,6 +99,8 @@ For each criterion:
 ## Step 6: Run /simplify on changed files
 
 Use `/simplify` to review all changed files for code quality, reuse opportunities, and efficiency improvements. This replaces a manual code quality scan with Claude Code's built-in simplification skill.
+
+If `/simplify` is not available (skill not installed or not recognized), skip this step and note "Code quality scan skipped — /simplify not available" in the verification report.
 
 `/simplify` will:
 - Identify code that can be simplified or deduplicated

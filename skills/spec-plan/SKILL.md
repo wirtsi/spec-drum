@@ -1,6 +1,6 @@
 ---
 name: spec-plan
-description: Create a spec from a ticket. Parses GitHub issues, Jira tickets, or plain text descriptions into a structured spec with research, requirements, and tasks.
+description: Create a spec from a ticket. Parses GitHub issues, Jira tickets, or plain text descriptions into a structured spec with research, requirements, and tasks. Use this when the user wants to plan work, break down a feature or bug into tasks, or create an implementation plan from a ticket or description.
 user-invocable: true
 model: opus
 allowed-tools:

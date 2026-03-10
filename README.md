@@ -27,6 +27,24 @@ npx spec-drum --local   # install to .claude/ and .specs/
 npx spec-drum --global  # install to ~/.claude/
 ```
 
+## Getting started
+
+```bash
+npx spec-drum --local          # install skills into your project
+/spec-steer                    # bootstrap steering documents (CLAUDE.md files)
+/spec-plan "add user avatars"  # create a spec from a description or ticket URL
+/spec-execute add-user-avatars # implement the spec with atomic commits
+/spec-verify add-user-avatars  # verify against requirements
+```
+
+For smaller tasks that don't need a full spec, use `/spec-quick`:
+
+```bash
+/spec-quick fix typo in login error message
+```
+
+Run `/spec-list` at any time to see the status of all specs.
+
 ## Workflow
 
 ### Full spec lifecycle (tickets, features, non-trivial work)
@@ -35,6 +53,10 @@ npx spec-drum --global  # install to ~/.claude/
 2. **`/spec-plan <ticket>`** — Create a spec from a GitHub issue URL, Jira ID, or plain text description
 3. **`/spec-execute <ticket-id>`** — Execute the spec: creates a branch, implements tasks with atomic commits, tracks progress
 4. **`/spec-verify <ticket-id>`** — Verify the implementation against the spec's requirements and acceptance criteria
+
+### Listing specs
+
+**`/spec-list`** — Show a dashboard of all specs with their status, priority, branch, and progress. Specs are grouped by status: blocked first, then in-progress, review, draft, done.
 
 ### Quick tasks (small, well-scoped changes)
 
@@ -63,6 +85,7 @@ If the task turns out to need more than 5 tasks, spec-quick will tell you to use
   spec-execute/SKILL.md
   spec-verify/SKILL.md
   spec-quick/SKILL.md
+  spec-list/SKILL.md
 .claude/bin/
   validate-spec.js       # Frontmatter validator (PostToolUse hook)
 .claude/settings.json    # Hook registration (merged, not overwritten)
@@ -79,6 +102,7 @@ If the task turns out to need more than 5 tasks, spec-quick will tell you to use
   spec-execute/SKILL.md
   spec-verify/SKILL.md
   spec-quick/SKILL.md
+  spec-list/SKILL.md
 ~/.claude/bin/
   validate-spec.js
 ~/.claude/settings.json  # Hook registration (merged, not overwritten)

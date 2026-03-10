@@ -1,6 +1,6 @@
 ---
 name: spec-quick
-description: Execute an ad-hoc task with solid planning and atomic commits, without creating spec files. Ideal for small, well-scoped tasks.
+description: Execute an ad-hoc task with solid planning and atomic commits, without creating spec files. Ideal for small, well-scoped tasks like quick fixes, one-off changes, small features, or refactors that don't warrant a full spec.
 user-invocable: true
 argument-hint: "<description> [--branch <name>] [--verify]"
 allowed-tools:
@@ -87,8 +87,10 @@ Wait for user confirmation before proceeding to execution.
 ## Step 4: Set up branch (if --branch)
 
 If `--branch <name>` was provided:
-1. `git checkout -b <name>` (or `git checkout <name>` if it exists)
-2. Confirm to the user which branch you're on.
+1. Detect the default branch: `git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'` (falls back to `main` if no remote is set)
+2. Ensure default branch is up to date: `git checkout <default-branch> && git pull --ff-only`
+3. `git checkout -b <name>` (or `git checkout <name>` if it exists)
+4. Confirm to the user which branch you're on.
 
 If no `--branch`, proceed on the current branch.
 

@@ -1,6 +1,6 @@
 ---
 name: spec-steer
-description: Manage steering documents for this project. On first run, analyzes the codebase and creates directory-scoped CLAUDE.md convention files. On subsequent runs, detects drift between the codebase and existing steering documents and proposes updates.
+description: Manage steering documents for this project. On first run, analyzes the codebase and creates directory-scoped CLAUDE.md convention files. On subsequent runs, detects drift between the codebase and existing steering documents and proposes updates. Use this whenever the user wants to set up project conventions, initialize CLAUDE.md files, or sync steering docs after codebase changes.
 user-invocable: true
 allowed-tools:
   - Read
@@ -97,6 +97,7 @@ For EACH proposed steering document:
 
 ### Step B4: Create .specs/CLAUDE.md
 
+<!-- Keep in sync with specs/CLAUDE.md in the spec-drum source repo -->
 Create the `.specs/CLAUDE.md` conventions file with the following content:
 
 ```markdown
@@ -174,6 +175,7 @@ Sections:
 | state.md (update) | /spec-execute, /spec-verify | /spec-execute, /spec-verify |
 | CLAUDE.md (steering) | /spec-steer | all skills |
 | *(no files)* | /spec-quick | reads CLAUDE.md files only |
+| *(no files)* | /spec-list | reads spec.md + state.md (read-only) |
 ```
 
 ### Step B5: Suggest root CLAUDE.md additions
@@ -191,6 +193,7 @@ This project uses spec-drum for spec-driven development. Specs live in `.specs/`
 3. `/spec-plan <ticket>` — Create a spec from a ticket (GitHub issue URL, Jira ID, or description)
 4. `/spec-execute <ticket-id>` — Execute the spec (creates branch, implements tasks, commits)
 5. `/spec-verify <ticket-id>` — Verify the implementation against the spec
+6. `/spec-list` — Show status dashboard of all specs
 
 ### Conventions
 - Directory-scoped CLAUDE.md files are steering documents capturing discovered conventions

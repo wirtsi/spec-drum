@@ -1,4 +1,5 @@
 # Spec Conventions
+<!-- Keep in sync with the inline template in skills/spec-steer/SKILL.md Step B4 -->
 
 This directory contains spec-drum specifications. Each subdirectory is a ticket.
 
@@ -72,3 +73,4 @@ Sections:
 | state.md (update) | /spec-execute, /spec-verify | /spec-execute, /spec-verify |
 | CLAUDE.md (steering) | /spec-steer | all skills |
 | *(no files)* | /spec-quick | reads CLAUDE.md files only |
+| *(no files)* | /spec-list | reads spec.md + state.md (read-only) |

@@ -19,6 +19,7 @@ and <https://github.com/bmad-code-org/BMAD-METHOD> but utilises the latest Claud
 3. `/spec-execute <ticket-id>` — Execute the spec (creates branch, implements tasks, commits)
 4. `/spec-verify <ticket-id>` — Verify the implementation against the spec
 5. `/spec-quick <description>` — Ad-hoc tasks: ephemeral plan + atomic commits, no spec files
+6. `/spec-list` — Dashboard of all specs with status, priority, and progress
 
 ### Conventions
 - Directory-scoped CLAUDE.md files are steering documents capturing discovered conventions

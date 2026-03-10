@@ -16,6 +16,7 @@ const SKILL_FILES = [
   { src: "skills/spec-execute/SKILL.md", dest: "skills/spec-execute/SKILL.md" },
   { src: "skills/spec-verify/SKILL.md", dest: "skills/spec-verify/SKILL.md" },
   { src: "skills/spec-quick/SKILL.md", dest: "skills/spec-quick/SKILL.md" },
+  { src: "skills/spec-list/SKILL.md", dest: "skills/spec-list/SKILL.md" },
   { src: "bin/validate-spec.js", dest: "bin/validate-spec.js" },
 ];
 
